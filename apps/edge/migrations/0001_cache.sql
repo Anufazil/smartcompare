@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY, value TEXT NOT NULL, expires INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS cache_expiry ON cache(expires);
+CREATE TABLE IF NOT EXISTS quotas (key TEXT PRIMARY KEY, used INTEGER NOT NULL CHECK(used >= 0), expires INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS quota_expiry ON quotas(expires);

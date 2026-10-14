@@ -1,0 +1,24 @@
+{
+  "name": "@smartcompare/edge",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8787",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "typecheck": "tsc --noEmit",
+    "deploy": "wrangler deploy",
+    "db:local": "wrangler d1 migrations apply smartcompare-cache --local",
+    "db:remote": "wrangler d1 migrations apply smartcompare-cache --remote"
+  },
+  "dependencies": {
+    "@smartcompare/shared": "workspace:*",
+    "@smartcompare/live": "workspace:*",
+    "@cloudflare/puppeteer": "^1.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260921.1",
+    "wrangler": "^4.0.0",
+    "typescript": "^5.9.3"
+  }
+}

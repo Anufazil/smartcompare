@@ -1,0 +1,8 @@
+FROM node:24-bookworm-slim
+WORKDIR /app
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/* && corepack enable
+COPY . .
+RUN pnpm install --frozen-lockfile && pnpm db:generate && pnpm --filter @smartcompare/worker build
+ENV NODE_ENV=production
+USER node
+CMD ["pnpm","--filter","@smartcompare/worker","start"]

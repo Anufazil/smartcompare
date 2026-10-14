@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+enum PlatformType {
+  ECOMMERCE
+  QUICK_COMMERCE
+  FOOD_DELIVERY
+}
+model Platform {
+  id String @id @default(cuid())
+  name String
+  slug String @unique
+  type PlatformType
+  baseUrl String
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  postings PlatformPosting[]
+}
+model CanonicalProduct {
+  id String @id @default(cuid())
+  title String
+  normalizedTitle String
+  brand String?
+  category String
+  unitValue Decimal? @db.Decimal(12, 3)
+  unit String?
+  imageUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  postings PlatformPosting[]
+  @@index([normalizedTitle])
+  @@index([brand, category])
+}
+model PlatformPosting {
+  id String @id @default(cuid())
+  platformId String
+  canonicalProductId String
+  externalId String
+  locationKey String
+  title String
+  productUrl String?
+  imageUrl String?
+  price Decimal @db.Decimal(12, 2)
+  deliveryFee Decimal? @db.Decimal(12, 2)
+  handlingFee Decimal? @db.Decimal(12, 2)
+  platformFee Decimal? @db.Decimal(12, 2)
+  etaMinutes Int?
+  available Boolean
+  pincode String
+  latitude Decimal @db.Decimal(9, 6)
+  longitude Decimal @db.Decimal(9, 6)
+  lastFetchedAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  platform Platform @relation(fields: [platformId], references: [id], onDelete: Restrict)
+  canonicalProduct CanonicalProduct @relation(fields: [canonicalProductId], references: [id], onDelete: Restrict)
+  @@unique([platformId, externalId, locationKey])
+  @@index([canonicalProductId, pincode, available])
+  @@index([lastFetchedAt])
+}
