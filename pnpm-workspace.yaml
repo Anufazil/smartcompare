@@ -7,7 +7,7 @@ allowBuilds:
   prisma: true
   esbuild: true
   sharp: true
-  msgpackr-extract: set this to true or false
-  workerd: set this to true or false
+  msgpackr-extract: true
+  workerd: true
 minimumReleaseAgeExclude:
   - '@cloudflare/workers-types@5.20260921.1'
