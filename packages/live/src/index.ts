@@ -12,6 +12,8 @@ import {
 
 export const USER_AGENT = 'SmartCompareBot/1.0';
 export const MAX_HTML_BYTES = 1_000_000;
+export const ROBOTS_TIMEOUT_MS = 6_000;
+export const SOURCE_TIMEOUT_MS = 8_000;
 export interface Source {
   name: string;
   origin: string;
@@ -323,7 +325,7 @@ export class LiveComparisonService {
       const r = await this.fetcher(url, {
         redirect: 'manual',
         headers: { 'User-Agent': USER_AGENT },
-        signal: AbortSignal.timeout(2500),
+        signal: AbortSignal.timeout(ROBOTS_TIMEOUT_MS),
       });
       if (r.status === 404) body = 'User-agent: *\nAllow: /';
       else {
@@ -351,15 +353,28 @@ export class LiveComparisonService {
         'SOURCE_COOLDOWN',
         'This source is cooling down. Please try again in 30 seconds.',
       );
-    const r = await this.fetcher(target, {
-      redirect: 'manual',
-      headers: {
-        'User-Agent': USER_AGENT,
-        Accept: 'text/html',
-        'Accept-Language': 'en-IN,en;q=0.9',
-      },
-      signal: AbortSignal.timeout(4500),
-    });
+    let r: Response;
+    try {
+      r = await this.fetcher(target, {
+        redirect: 'manual',
+        headers: {
+          'User-Agent': USER_AGENT,
+          Accept: 'text/html',
+          'Accept-Language': 'en-IN,en;q=0.9',
+        },
+        signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS),
+      });
+    } catch (error) {
+      // Browser Run is deliberately an Amazon-only last attempt. It is used only after
+      // robots permission was verified and an ordinary Cloudflare fetch timed out.
+      if (error instanceof DOMException && error.name === 'TimeoutError' && this.render && source.name === 'Amazon') {
+        const rendered = await this.render(target, source);
+        return extractListings(rendered, target, source, request);
+      }
+      if (error instanceof DOMException && error.name === 'TimeoutError')
+        throw new SourceError('TIMEOUT', 'This source did not respond within the search limits.');
+      throw error;
+    }
     if (!r.ok) {
       await r.body?.cancel();
       throw new SourceError(
