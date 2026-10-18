@@ -1,35 +1,22 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "smartcompare-live",
-	"main": "src/index.ts",
-	"compatibility_date": "2026-09-21",
-	"compatibility_flags": [
-		"nodejs_compat"
-	],
-	"workers_dev": true,
-	"browser": {
-		"binding": "BROWSER"
-	},
-	"d1_databases": [
-		{
-			"binding": "DB",
-			"database_name": "smartcompare-cache",
-			"database_id": "5811fed2-a102-4d35-80a9-4df617b3fdb3",
-			"migrations_dir": "migrations",
-		},
-		{
-			"binding": "smartcompare_cache",
-			"database_name": "smartcompare-cache",
-			"database_id": "5811fed2-a102-4d35-80a9-4df617b3fdb3"
-		},
-	],
-	"vars": {
-		"ALLOWED_ORIGINS": "http://127.0.0.1:3000,http://localhost:3000",
-		"ENABLE_BROWSER": "true",
-	},
-	"triggers": {
-		"crons": [
-			"17 2 * * *"
-		]
-	},
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "smartcompare-live",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "browser": { "binding": "BROWSER" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "smartcompare-cache",
+      "database_id": "5811fed2-a102-4d35-80a9-4df617b3fdb3",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "vars": {
+    "ALLOWED_ORIGINS": "https://smartcompare-ten.vercel.app",
+    "ENABLE_BROWSER": "true",
+  },
+  "triggers": { "crons": ["17 2 * * *"] },
 }
